@@ -2,10 +2,15 @@ Package: augmentCongress
 Type: Package
 Title: Extract and Merge Data on Member of Congress
 Version: 0.1.0
-Author: Devin Judge-Lord and Maggie Claire Nead
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Devin Judge-Lord
+Maintainer: The package maintainer <DevinJudgeLord@fas.harvard.edu>
+Description: augment Congress offers tools to extract the names of members of Congress from text to link data on members of Congress.
+    Example data from the Congressional Record and congressional letters to the Federal Energy Regulatory Commission are provided.
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports:
+	tidyverse,
+	crayon,
+	magrittr
+RoxygenNote: 7.1.2

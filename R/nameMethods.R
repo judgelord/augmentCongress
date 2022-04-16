@@ -1,5 +1,4 @@
-##########################################################################################################
-# This script defines functions for cleaning and extracting names of members of congress
+# Extract names of Members of congress
 #' cleanFROMcolumn() preprocesses text to make matching more likely
 #' formatFirstName() and formatLastName()formats names to look like those provided by voteview. These are used by other functions
 #' extractMemberNames looks for names in many formats
