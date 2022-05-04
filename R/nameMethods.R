@@ -701,7 +701,7 @@ extractMemberName <- function(data,
 
   data %<>%
     mutate(data_id = coalesce(data_id, ID) %>% # replace missing with row number
-             as.numeric() + 1) # add one to make letter id the same as sheet id
+             as.numeric() ) #FIXME add one to make letter id the same as sheet id
 
   data$data_id %<>%
     formatC(width=6, flag="0", format = "fg")
