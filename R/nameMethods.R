@@ -597,14 +597,14 @@ extractNamesPerCongress <- function(congress_i, data, members = members){
                   !is.na(ERROR),
                 nonobs,
                 string) ) %>%
-              # group_by(LetterID) %>%
-              # mutate(LetterID = ifelse(string == "but probably non-observations",
-              #                          LetterID == paste(top_n(1, LetterID), "-", top_n(1, desc(LetterID)) ),
-              #                          LetterID) ) %>%
+              # group_by(data_id) %>%
+              # mutate(data_id = ifelse(string == "but probably non-observations",
+              #                          data_id == paste(top_n(1, data_id), "-", top_n(1, desc(data_id)) ),
+              #                          data_id) ) %>%
               # ungroup() %>%
               group_by(string) %>%
               mutate(DATE = paste0(unique(DATE), collapse = ", "),
-                     row = paste0(unique(LetterID), collapse = ";") %>% str_trunc(4+(10*7)+3) ) %>% # "row [first 10 row numbers]..."
+                     row = paste0(unique(data_id), collapse = ";") %>% str_trunc(4+(10*7)+3) ) %>% # "row [first 10 row numbers]..."
               count(DATE, row, string, wt = NULL) %>%
               arrange(row) %>%
               arrange(-n) %>%
@@ -691,19 +691,19 @@ extractMemberName <- function(data,
   t <- Sys.time()
 
   # Add Letter ID if missing
-  if(!"LetterID" %in% names(data)){data$LetterID <- 1:nrow(data)}
+  if(!"data_id" %in% names(data)){data$data_id <- 1:nrow(data)}
 
-  data$LetterID %<>%
+  data$data_id %<>%
     str_squish() %>%
     as.numeric()
 
   data$ID <- 1:nrow(data)
 
   data %<>%
-    mutate(LetterID = coalesce(LetterID, ID) %>% # replace missing with row number
+    mutate(data_id = coalesce(data_id, ID) %>% # replace missing with row number
              as.numeric() + 1) # add one to make letter id the same as sheet id
 
-  data$LetterID %<>%
+  data$data_id %<>%
     formatC(width=6, flag="0", format = "fg")
 
   # Make missing congress explicit 0 so that it will not be dropped
@@ -783,7 +783,7 @@ extractMemberName <- function(data,
 
     data$icpsr %<>% as.numeric()
 
-    data %<>% select(LetterID, ID, congress, string, pattern, chamber, everything())
+    data %<>% select(data_row_id = data_id, match_id = ID, icpsr, bioname, string, pattern, chamber, congress, everything())
 
     return(data)
 }

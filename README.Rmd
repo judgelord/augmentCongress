@@ -1,29 +1,92 @@
+---
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE,
+  collapse = FALSE,
+  warning = FALSE,
+  message = TRUE,
+  tidy = FALSE,
+  fig.align='center',
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  R.options = list(width = 200)
+)
+```
+
+
 # augmentCongress
 A package to extract named members of the U.S. Congress in messy text with typos and inconsistent name formats
 
 Install this package with 
 ```
 devtools::install_github("judgelord/augmentCongress")
+
+library(augmentCongress)
+```
+
+Currently, functions are in two scripts: 
+```{r, message=FALSE}
+# name matching function 
+source(here::here("R", "nameMethods.R"))
+
+# common typos and known permutations and nicknames 
+source(here::here("R", "MemberNameTypos.R"))
+```
+
+## Data
+
+This package relies on a data frame of permutations of the names of members of congress. This dataframe is build on the basic structure of voteview.com data, especially the `bioname` field. 
+
+```{r}
+data("members")
+
+members[c("chamber", "congress", "bioname", "pattern")] |> head()
 ```
 
 ## Basic Usage
 
 There are two basic functions
+
 1. `extractMemberName()` returns a list of the names of members of Congress in a supplied vector of text
 2. `augmentCongress()` augments a dataframe that includes at least one unique identifier to include a suite of other common identifiers
 
-```{r}
-library(augmentCongress)
+For example, we can use `extractMemberName()` to detect the names of members of congress in the text of the congressional record. I demonstrate this with text of the congressional record from 3/1/2007, scraped and parsed using methods described [here](https://github.com/judgelord/cr)
 
-data("congressional_record")
+```{r}
+data("cr2007_03_01")
+
+head(cr2007_03_01)
+
+# to better match member names, this method currently requires a column, "congress" with the number of the congress (this can be created from a date)
+# in this example, all observations are in the 110th congress 
+
+cr2007_03_01$congress <- 110
 
 # extract legislator names and match to voteview ICPSR numbers
-cr <- extractMemberName(congressional_record, col_name = "speaker")
+cr <- extractMemberName(data = cr2007_03_01, 
+                        col_name = "speaker", 
+                        members = members)
 
-cr
+head(cr)
+```
 
+Because `augmentCongress` links each detected name to ICPSR IDs from voteview.com, we already have some information, like party (`party_name`), state, district, and ideology scores (`nominate.dim1`) for each match in the text of the congressional record. 
+
+
+```{r}
+full_join(cr, members) |> select(data_row_id, match_id, bioname, icpsr, congress, state, district_code, party_name, nominate.dim1, url_txt)
+```
+
+The function `cr_augmentCongress` is not not yet built, but it will simply join in other datasets on IDs like ICPSR numbers.
+
+```
 # add other common unique identifiers
 cr_augmented <- augmentCongress(cr)
-
-cr_augmented
 ```
